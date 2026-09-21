@@ -112,13 +112,14 @@ df_sc <- data.frame(
   func = rep(c("sin", "cos"), each = length(x_sc))
 )
 library(ggplot2)
-ggplot(df_sc, aes(x = x, y = value, color = func)) +
-  geom_line() +
-  labs(title = "Sine and Cosine", x = "x", y = "value")
+# Sine: blue solid line; Cosine: red dotted line
+ggplot() +
+  geom_line(data = subset(df_sc, func == "sin"), aes(x = x, y = value), color = "blue") +
+  geom_line(data = subset(df_sc, func == "cos"), aes(x = x, y = value), color = "red", linetype = "dotted") +
+  labs(title = "Sine (blue) and Cosine (red, dotted)", x = "x", y = "value")
 
 #Q8
 # Simulate tossing a biased coin with P(heads)=0.4 using Bernoulli trials
-set.seed(7321)
 p <- 0.4
 N <- 1000
 # simulate via uniform draws (Bernoulli): 1=heads, 0=tails
@@ -131,7 +132,6 @@ sample_mean
 
 #Q9
 # Demonstrate the Law of Large Numbers with fair coin tosses (p = 0.5)
-set.seed(8427)
 N_lln <- 10000
 # 1 = heads, 0 = tails
 tosses_fair <- rbinom(N_lln, size = 1, prob = 0.5)
@@ -151,7 +151,6 @@ ggplot(df_lln, aes(x = trial, y = cummean)) +
 
 #Q10
 # Generate a Binomial(50, 0.2) random variable using uniform draws
-set.seed(2917)
 n_bin <- 50
 p_bin <- 0.2
 # one Binomial draw as sum of Bernoulli trials via uniforms
@@ -161,7 +160,6 @@ X_bin
 
 #Q11
 # Simulate a discrete random variable X with P(X=1)=0.35, P(X=2)=0.15, P(X=3)=0.4, P(X=4)=0.1 using a uniform draw
-set.seed(4891)
 u <- runif(1)
 if (u < 0.35) {
   X <- 1
@@ -178,16 +176,14 @@ X
 
 #Q12
 # Simulate an Exponential(1) random variable using inverse transform of a uniform(0,1)
-set.seed(7391)
 U_exp <- runif(1)
-X_exp <- -log(U_exp)
+X_exp <- -log(1-U_exp)
 # show simulated exponential draw
 X_exp
 
 
 #Q13
 # Generate 5000 pairs of independent standard Normal(0,1) variables via Box-Muller using uniforms and plot histograms
-set.seed(5460)
 n_pairs <- 5000
 u1 <- runif(n_pairs)
 u2 <- runif(n_pairs)
