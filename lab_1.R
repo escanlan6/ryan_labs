@@ -1,199 +1,143 @@
+#Q1 (a,c)
+set.seed(1065)
+N <- c(10, 100, 1000, 10000)
+unif_mean <- numeric(length(N))
+unif_var <- numeric(length(N))
+par(mfrow = c(2,2))
+for (i in seq_along(N)) {
+  unif_sample <- runif(N[i], min=0, max=1)
+  unif_mean[i] <- mean(unif_sample)
+  unif_var[i] <- var(unif_sample)
 
-#Q1
-A <- matrix(c(3,5,0,2), nrow=2, ncol=2)
-B <- matrix(c(1,4,4,7), nrow=2, ncol=2)
+  bins <- min(N[i], 50)
+  unif_breaks <- seq(0, 1, length.out = bins)
 
-#(a) A+B
-A + B
+  hist(
+    unif_sample,
+    breaks = unif_breaks,
+    probability = TRUE,
+    main = paste("Uniform Sample: N =", N[i]),
+    col = "lightblue",
+    border = "white",
 
-#(b) A-B
-A - B
+  )
+  x_unif <- seq(0, 1, length.out = 100)
+  lines(x_unif, dunif(x_unif), col = "red", lwd = 2)
+}
+unif_results <- data.frame(N, unif_mean, unif_var)
+print(unif_results)
 
-#(c) AB (matrix multiplication)
-A %*% B
+#Q1 (b,c)
+normal_mean <- numeric(length(N))
+normal_var <- numeric(length(N))
+par(mfrow = c(2,2))
+for (i in seq_along(N)) {
+  normal_sample <- rnorm(N[i], mean=0, sd=1)
+  normal_mean[i] <- mean(normal_sample)
+  normal_var[i] <- var(normal_sample)
 
-#(d) A(B^-1)
-A %*% solve(B)
+  hist(
+    normal_sample,
+    breaks = min(N[i], 50),
+    probability = TRUE,
+    main = paste("Normal Sample: N =", N[i]),
+    xlab = "x",
+    xlim = c(-4, 4),
+    col = "lightblue",
+    border = "white",
 
-#(e) A/B  # MATLAB-style right division: A * inv(B)
-A %*% solve(B)
-
-#(f) A\B  # MATLAB-style left division: inv(A) * B
-solve(A) %*% B
-
-#(g) A.*B  # element-wise multiplication
-A * B
-
-#(h) A./B  # element-wise division
-A / B
+  )
+  x_normal <- seq(-4, 4, length.out = 100)
+  lines(x_normal, dnorm(x_normal), col = "red", lwd = 2)
+}
+normal_results <- data.frame(N, normal_mean, normal_var)
+print(normal_results)
 
 
 #Q2
-C <- matrix(c(1,2,1,4,4,6,3,13,3,8,4,15,7,3,5,15), nrow=4, ncol=4)
+LCG = function(N, a, c, m, x0){
+  x = numeric(N+1)
+  x[1] = x0
+  for(i in 1:N){
+    x[i+1] = (a * x[i] + c) %% m
+  }
+  u = x/m
+  return(u[-1])
+}
 
-# Show rank of C using QR decomposition
-qr(C)$rank
-
-# Why is the rank of C not 4?
-# Because C is singular: det(C) = 0 and the smallest singular value is ~0, so the columns are linearly dependent; specifically c2 + c3 = 7*c1, giving rank 3.
+par(mfrow=c(1,1))
+rv = LCG(10000, 1+4*5673869, 1, 2^32, 1)
+mean(rv)
+dens = density(rv)
+plot(dens$x, dens$y, type='l')
+hist(rv, breaks=15, prob=TRUE)
+lines(dens$x, dens$y, col='red', lwd=2)
 
 #Q3
-D <- matrix(c(1,2,1,4,4,6,3,1,3,8,4,7,7,3,5,6), nrow=4, ncol=4)
-d <- matrix(c(14,8,10,18), nrow=4, ncol=1)
-
-# Solve the system Dx = d
-solve(D, d)
-
-
-#Q4
-# Generate E: 4x4 matrix of uniform random numbers and compute trace and determinant
-set.seed(6372)
-E <- matrix(runif(16), nrow = 4, ncol = 4)
-# Trace of E
-sum(diag(E))
-# Determinant of E
-det(E)
-
-# Verify eigenvalue relations: product(eigenvalues) == determinant, sum(eigenvalues) == trace
-ev <- eigen(E)$values
-prod_ev <- prod(ev)
-sum_ev <- sum(ev)
-detE <- det(E)
-trE <- sum(diag(E))
-# Compare (coerce determinant/trace to complex to match eigenvalue mode)
-prod_equal <- all.equal(prod_ev, as.complex(detE))
-sum_equal <- all.equal(sum_ev, as.complex(trE))
-
-# Print results
-ev
-prod_ev
-as.complex(detE)
-prod_equal
-sum_ev
-as.complex(trE)
-sum_equal
-
-
-#Q5
-# Generate vectors x, y, z
-x <- seq(-6, 121, by = 1)
-x
-y <- seq(-6, 120, by = 2)
-y
-z <- 2^(1:7)
-z
-
-
-#Q6
-# Create a 5x6 matrix F and assign values using for/if/else if/else
-F <- matrix(0, nrow = 5, ncol = 6)
-for(i in 1:nrow(F)){
-  for(j in 1:ncol(F)){
-    if(i == j){
-      F[i,j] <- -8
-    } else if(abs(i - j) == 1){
-      F[i,j] <- 3
-    } else {
-      F[i,j] <- 0
-    }
+ChiTest = function(N, sample, alpha) {
+  bins = seq(0, 1, 1/N)
+  observed = hist(sample, breaks=bins, plot=FALSE)$counts
+  expected = rep(length(sample)/N, N)
+  T = sum((observed - expected)^2 / expected)
+  deg_freedom = N - 1
+  critical_value = qchisq(alpha, df=deg_freedom)
+  p_value = 1 - pchisq(T, df=deg_freedom)
+  if (T>critical_value) {
+    decision = "Reject H0"
+  } else {
+    decision = "Do not reject H0"
   }
+  return(list(
+    decision = decision,
+    test_statistic = T,
+    p_value = p_value
+  ))
 }
 
-# Show F
-F
+ChiTest(15, rv, 0.95)
 
+n_samples <- 2000
+sample_size <- 500
+n_bins <- 10
+confidence_level <- 0.95
+a <- 1+4*5673869
+c <- 1
+m <- 2^32
+x0 <- 12345
 
-#Q7
-# Plot sine and cosine using ggplot
-x_sc <- seq(0, 2 * pi, length.out = 400)
-df_sc <- data.frame(
-  x = rep(x_sc, times = 2),
-  value = c(sin(x_sc), cos(x_sc)),
-  func = rep(c("sin", "cos"), each = length(x_sc))
+lcg_sequence <- LCG(n_samples * sample_size, a, c, m, x0)
+lcg_samples <- matrix(
+  lcg_sequence, 
+  nrow = n_samples, 
+  ncol = sample_size, 
+  byrow = TRUE
 )
-library(ggplot2)
-# Sine: blue solid line; Cosine: red dotted line
-ggplot() +
-  geom_line(data = subset(df_sc, func == "sin"), aes(x = x, y = value), color = "blue") +
-  geom_line(data = subset(df_sc, func == "cos"), aes(x = x, y = value), color = "red", linetype = "dotted") +
-  labs(title = "Sine (blue) and Cosine (red, dotted)", x = "x", y = "value")
 
-#Q8
-# Simulate tossing a biased coin with P(heads)=0.4 using Bernoulli trials
-p <- 0.4
-N <- 1000
-# simulate via uniform draws (Bernoulli): 1=heads, 0=tails
-tosses <- as.numeric(runif(N) < p)
-# sample mean
-sample_mean <- mean(tosses)
-# show results
-sample_mean
+test_decisions <- character(n_samples)
+test_statistics <- numeric(n_samples)
 
-
-#Q9
-# Demonstrate the Law of Large Numbers with fair coin tosses (p = 0.5)
-N_lln <- 10000
-# 1 = heads, 0 = tails
-tosses_fair <- rbinom(N_lln, size = 1, prob = 0.5)
-# cumulative sample mean
-cummean <- cumsum(tosses_fair) / seq_len(N_lln)
-# prepare data frame for plotting
-df_lln <- data.frame(trial = seq_len(N_lln), cummean = cummean)
-# plot showing convergence toward 0.5
-library(ggplot2)
-ggplot(df_lln, aes(x = trial, y = cummean)) +
-  geom_line() +
-  geom_hline(yintercept = 0.5, linetype = "dashed") +
-  labs(title = "Law of Large Numbers: cumulative mean of fair coin tosses",
-       x = "Trial",
-       y = "Cumulative mean")
-
-
-#Q10
-# Generate a Binomial(50, 0.2) random variable using uniform draws
-n_bin <- 50
-p_bin <- 0.2
-# one Binomial draw as sum of Bernoulli trials via uniforms
-X_bin <- sum(runif(n_bin) < p_bin)
-X_bin
-
-
-#Q11
-# Simulate a discrete random variable X with P(X=1)=0.35, P(X=2)=0.15, P(X=3)=0.4, P(X=4)=0.1 using a uniform draw
-u <- runif(1)
-if (u < 0.35) {
-  X <- 1
-} else if (u < 0.35 + 0.15) {
-  X <- 2
-} else if (u < 0.35 + 0.15 + 0.4) {
-  X <- 3
-} else {
-  X <- 4
+for (i in 1:n_samples) {
+  test_result <- ChiTest(
+    n_bins, 
+    lcg_samples[i, ], 
+    confidence_level
+  )
+  test_decisions[i] <- test_result$decision
+  test_statistics[i] <- test_result$test_statistic
 }
-# show simulated value
-X
 
+n_rejected <- sum(test_decisions == "Reject H0")
+percentage_rejected <- (n_rejected / n_samples) * 100
 
-#Q12
-# Simulate an Exponential(1) random variable using inverse transform of a uniform(0,1)
-U_exp <- runif(1)
-X_exp <- -log(1-U_exp)
-# show simulated exponential draw
-X_exp
+rep_summary <- data.frame(
+  n_samples = n_samples,
+  sample_size = sample_size,
+  n_bins = n_bins,
+  confidence_level = confidence_level,
+  n_rejected = n_rejected,
+  percentage_rejected = percentage_rejected
+)
 
-
-#Q13
-# Generate 5000 pairs of independent standard Normal(0,1) variables via Box-Muller using uniforms and plot histograms
-n_pairs <- 5000
-u1 <- runif(n_pairs)
-u2 <- runif(n_pairs)
-z1 <- sqrt(-2 * log(u1)) * cos(2 * pi * u2)
-z2 <- sqrt(-2 * log(u1)) * sin(2 * pi * u2)
-# combined data frame for plotting
-library(ggplot2)
-df_norm <- data.frame(value = c(z1, z2), var = rep(c("Z1", "Z2"), each = n_pairs))
-# plot separate histograms for Z1 and Z2
-ggplot(df_norm, aes(x = value)) +
-  geom_histogram(bins = 50, fill = "steelblue", color = "black") +
-  facet_wrap(~var, ncol = 1) +
-  labs(title = "Histograms of Z1 and Z2 from Box–Muller", x = "Value", y = "Count")
+print("Repeated chi-squared test results")
+print(rep_summary)
+print("At 95% confidence level, approximately 5% rejections expected")
