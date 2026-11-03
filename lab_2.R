@@ -68,16 +68,16 @@ for (i in seq_along(alpha)) {
   pareto_var[i] <- var(pareto_sample)
 
   hist(
-  pareto_sample,
-  breaks = 50,
-  probability = TRUE,
-  main = paste("Pareto Sample: α =", alpha[i], ", β =", beta[i]),
-  col = "lightblue",
-  border = "white",
-  xlim = c(beta[i], max(pareto_sample))
-)
-x_grid <- seq(beta[i], max(pareto_sample), length.out = 100)
-lines(x_grid, density_pareto(x_grid, beta[i], alpha[i]), col = "red", lwd = 2)
+    pareto_sample,
+    breaks = 50,
+    probability = TRUE,
+    main = paste("Pareto Sample: α =", alpha[i], ", β =", beta[i]),
+    col = "lightblue",
+    border = "white",
+    xlim = c(beta[i], max(pareto_sample))
+  )
+  x_grid <- seq(beta[i], max(pareto_sample), length.out = 100)
+  lines(x_grid, density_pareto(x_grid, beta[i], alpha[i]), col = "red", lwd = 2)
 }
 moment_results <- data.frame(
   alpha = alpha,
@@ -187,10 +187,7 @@ for (i in seq_along(sample_sizes)) {
       main = "Empirical and theoretical CDF",
       xlab = "x",
       ylab = "F(x)",
-      xlim = c(
-        0,
-        max(exp_sample)
-      ),
+      xlim = c(0, max(exp_sample)),
       col = "blue",
       lwd = 2
     )
