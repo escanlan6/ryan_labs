@@ -170,14 +170,8 @@ for (i in seq_along(sample_sizes)) {
     rate <- 2
     alpha <- 0.05
 
-    exp_sample <- rexp(
-      N,
-      rate = rate
-    )
-
-    empirical_cdf <- ecdf(
-      exp_sample
-    )
+    exp_sample <- rexp(N, rate = rate)
+    empirical_cdf <- ecdf(exp_sample)
       
 
     plot(
@@ -192,25 +186,13 @@ for (i in seq_along(sample_sizes)) {
       lwd = 2
     )
 
-x_grid <- seq(
-  0,max(exp_sample),
-  length.out = 1000
-)
+x_grid <- seq(0, max(exp_sample), length.out = 1000)
 
-lines(
-  x_grid,
-  pexp(
-    x_grid, rate = rate),
-  col = "red",
-  lwd = 2
-)
+lines(x_grid, pexp(x_grid, rate = rate), col = "red", lwd = 2)
 
 ordered_sample <- sort(exp_sample)
 
-theoretical_cdf <- pexp(
-  ordered_sample,
-  rate = rate
-)
+theoretical_cdf <- pexp(ordered_sample, rate = rate)
 
 D_plus <- max((1:N)/N - theoretical_cdf)
 D_minus <- max(theoretical_cdf - (0:(N-1))/N)
