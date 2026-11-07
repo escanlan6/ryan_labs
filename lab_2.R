@@ -1,4 +1,6 @@
-# Q1
+#Q1: Inverse Transform Method (ITM) for Pareto Distribution
+#Q1(a): Compute inverse distribution
+
 # inverse distribution function calculation (Let alpha = a, beta = b)
 # f(x) = a * b^a / x^(a + 1), x >= b > 0
 
@@ -22,10 +24,11 @@ density_pareto <- function(x, beta, alpha) {
   ifelse(x < beta, 0, alpha * beta^alpha / x^(alpha + 1))
 }
 
+#Q1(b): Generate and plot Pareto random numbers
+set.seed(2025)
 alpha <- c(2,3,5,3)
 beta <- c(1,1,1,3)
 n <- 10000
-set.seed(2025)
 par(mfrow = c(2,2))
 pareto_mean <- numeric(length(alpha))
 # Theoretical mean calculation
@@ -90,7 +93,7 @@ moment_results <- data.frame(
 
 print(moment_results)
 
-#Q2 - ARM
+#Q2: Acceptance-Rejection Method (ARM)
 # f(x) = (x^2 / 2) * e^-x, x >= 0
 # g(x) = lambda * e^(-lambda * x), x >= 0
 # m(x) = f(x) / g(x) = (x^2 / 2 * lambda) * e^(-x * (1 - lambda))
@@ -126,8 +129,8 @@ arm <- function(N) {
   }
   observed <- numeric(N)
   accepted <- 0
-  while (accepted < N) {
-    y <- rexp(1, rate = lambda)
+  while (accepted < N) { #Generate until we have N accepted samples
+    y <- rexp(1, rate = lambda) #Gen candidate Y from g
     u <- runif(1)
     if (u <= fx(y) / (c * gx(y, lambda))) {
       accepted <- accepted + 1
@@ -137,6 +140,7 @@ arm <- function(N) {
   return(observed)
 }
 
+#Q2(b): Generate and plot ARM random numbers
 sample_sizes <- c(100, 1000, 10000, 50000)
 for (i in seq_along(sample_sizes)) {
   arm_sample <- arm(sample_sizes[i])
@@ -162,34 +166,35 @@ for (i in seq_along(sample_sizes)) {
   )
 }
 
-#Q3 - KS-test
+#Q3: KS-test
 #X ~ Exp(2)
 # F2(x) = 1 - e^(-2 * x), x >= 0
-    set.seed(2025)
-    N <- 200
-    rate <- 2
-    alpha <- 0.05
+set.seed(2025)
+N <- 200
+rate <- 2
+alpha <- 0.05
 
-    exp_sample <- rexp(N, rate = rate)
-    empirical_cdf <- ecdf(exp_sample)
-      
+exp_sample <- rexp(N, rate = rate)
+empirical_cdf <- ecdf(exp_sample)
+  
 
-    plot(
-      empirical_cdf,
-      verticals = TRUE,
-      do.points = FALSE,
-      main = "Empirical and theoretical CDF",
-      xlab = "x",
-      ylab = "F(x)",
-      xlim = c(0, max(exp_sample)),
-      col = "blue",
-      lwd = 2
-    )
+plot(
+  empirical_cdf,
+  verticals = TRUE,
+  do.points = FALSE,
+  main = "Empirical and theoretical CDF",
+  xlab = "x",
+  ylab = "F(x)",
+  xlim = c(0, max(exp_sample)),
+  col = "blue",
+  lwd = 2
+)
 
 x_grid <- seq(0, max(exp_sample), length.out = 1000)
 
 lines(x_grid, pexp(x_grid, rate = rate), col = "red", lwd = 2)
 
+#Q3(b): Calculate D_N statistic
 ordered_sample <- sort(exp_sample)
 
 theoretical_cdf <- pexp(ordered_sample, rate = rate)
@@ -205,6 +210,7 @@ manual_results <- data.frame(
 )
 print(manual_results)
 
+#Q3(c): Use ks.test() function to perform KS test
 ks_result <- ks.test(
   exp_sample,
   "pexp",
@@ -222,6 +228,7 @@ if (ks_result$p.value < alpha) {
   )
 }
 
+#Q3(d): Repeated KS test
 M <- 1000
 rejected <- numeric(M)
 set.seed(2025)

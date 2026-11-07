@@ -1,4 +1,6 @@
 #Q1 Cauchy Distribution
+#Q1(a) Compute the inverse distribution function
+
 # Cauchy distribution (pdf): f(x) = 1 / (pi * (1 + x^2))
 # pdf to cdf: integrate f(x) from -inf to x
 # 1 / pi * integral 1 / (1 + t^2) dt = 1 / pi * arctan(t) {from -inf to x}
@@ -13,6 +15,7 @@ inverse_cauchy <- function(u) {
   return(tan(pi * (u - 1/2)))
 }
 
+#Q1(b) Generate Cauchy randon numbers and show CLT doesn't hold
 sample_size <- 500
 replications <- c(10, 100, 1000, 10000)
 par(mfrow = c(2, 2))
@@ -84,6 +87,7 @@ MonteCarlo <- function(samples, A, confidence = 0.95) {
   )
 }
 
+#Q2(a): Interpret integral I1
 # I1 = integral from 0 to inf of x * e^-x dx
 # Density of exponential distribution: f(x) = lambda * exp(-lambda * x) for x >= 0
 # Y ~ Exp(lambda)
@@ -94,7 +98,7 @@ A1 <- function(x) {
   return(x)
 }
 
-# Q2(b): Give an asymptotic 95% confidence interval for the MC estimate
+#Q2(b): Give an asymptotic 95% confidence interval for the MC estimate
 set.seed(2025)
 n <- 10000
 x <- rexp(n, rate = 1)
@@ -131,7 +135,7 @@ colnames(Q2_results) <- c(
   "CI_upper"
 )
 
-# Repeat Monte Carlo experiment
+#Q2(c): Repeat Monte Carlo experiment
 for (i in seq_along(sample_sizes)) {
   n <- sample_sizes[i]
   # Generate sample
@@ -188,7 +192,7 @@ lines(sample_sizes, Q2_results[, "CI_lower"], col = "blue", lwd = 2)
 
 abline(h = mu1, col = "red", lwd = 2, lty = 2)
 
-# Repeat the entire Monte Carlo experiment many times.
+#Q2(d): Repeat the entire Monte Carlo experiment many times.
 # For a 95% CI, approximately 95% of intervals should
 # contain the true value mu = 1.
 set.seed(2025)
@@ -226,6 +230,7 @@ A2 <- function(x) {
   return(7 * f(x))
 }
 
+#Q3(a): MCE of I2
 set.seed(2025)
 n <- 10000
 # Generate Uniform(1,8) observations

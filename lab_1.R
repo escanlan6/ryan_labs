@@ -1,4 +1,5 @@
-#Q1 (a,c)
+#Q1: Generating random numbers
+#Q1 (a,c): Generate and plot uniform random numbers
 set.seed(1065)
 N <- c(10, 100, 1000, 10000)
 unif_mean <- numeric(length(N))
@@ -27,7 +28,7 @@ for (i in seq_along(N)) {
 unif_results <- data.frame(N, unif_mean, unif_var)
 print(unif_results)
 
-#Q1 (b,c)
+#Q1 (b,c): Generate and plot normal random numbers
 normal_mean <- numeric(length(N))
 normal_var <- numeric(length(N))
 par(mfrow = c(2,2))
@@ -54,7 +55,10 @@ normal_results <- data.frame(N, normal_mean, normal_var)
 print(normal_results)
 
 
-#Q2
+#Q2 Linear Congruential Generator (LCG)
+# X_i + 1 = (a * X_i + c) mod m
+# Eg: X0 = 1, a = 3, c = 0, m = 11
+# X1 = (3 * 1 + 0) mod 11 = 3; X2 = (3 * 3 + 0) mod 11 = 9; X3 = (3 * 9 + 0) mod 11 = 5...
 LCG = function(N, a, c, m, x0){
   x = numeric(N+1)
   x[1] = x0
@@ -73,9 +77,9 @@ plot(dens$x, dens$y, type='l')
 hist(rv, breaks=15, prob=TRUE)
 lines(dens$x, dens$y, col='red', lwd=2)
 
-#Q3
+#Q3 Chi-square test for uniformity
 ChiTest = function(N, sample, alpha) {
-  bins = seq(0, 1, 1/N)
+  bins = seq(0, 1, 1/N) # Histogram split points
   observed = hist(sample, breaks=bins, plot=FALSE)$counts
   expected = rep(length(sample)/N, N)
   T = sum((observed - expected)^2 / expected)
@@ -96,6 +100,7 @@ ChiTest = function(N, sample, alpha) {
 
 ChiTest(15, rv, 0.95)
 
+#Q3(b): Repeated chi-square test
 n_samples <- 2000
 sample_size <- 500
 n_bins <- 10
@@ -105,6 +110,7 @@ c <- 1
 m <- 2^32
 x0 <- 12345
 
+# Generate 1 long LCG sequence and divide into 2000 samples
 lcg_sequence <- LCG(n_samples * sample_size, a, c, m, x0)
 lcg_samples <- matrix(
   lcg_sequence, 
