@@ -69,6 +69,10 @@ LCG = function(N, a, c, m, x0){
   return(u[-1])
 }
 
+#Conditions for full period:
+# c and m are relatively prime
+# a - 1 is divisible by all prime factors of m
+# a - 1 is divisible by 4 if m is divisible by 4
 par(mfrow=c(1,1))
 rv = LCG(10000, 1+4*5673869, 1, 2^32, 1)
 mean(rv)

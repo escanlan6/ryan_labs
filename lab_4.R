@@ -36,7 +36,7 @@ make_results <- function(methods, summaries, vrfs) {
 # True Var[Y] = E[Y^2] - (E[Y])^2 = Var[U^2] = E[U^4] - (E[U^2])^2
 # E[U^4] = integral from 0 to 1 of u^4 du = u^5 / 5 {from 0 to 1} = 1/5
 # Var[U^2] = 1/5 - (1/3)^2 = 4/45
-# True SD = sqrt(4/45 * N)
+# True SE = sqrt(4/45 * N)
 # H_i = (U_i^2 + (1 - U_i)^2) / 2 = u_i^2 - u_i + 1/2
 
 set.seed(4101)

@@ -8,14 +8,14 @@
 # CDF: F(x) = 1/2 + arctan(x)/pi
 
 # set cdf = u, solve for x
-# u = 1/2 + arctan(x)/pi = u + 1/2 = arctan(x)/pi = pi * (u - 1/2) = arctan(x)
+# u = 1/2 + arctan(x)/pi => u - 1/2 = arctan(x)/pi = pi * (u - 1/2) = arctan(x)
 # x = tan(pi * (u - 1/2))
 
 inverse_cauchy <- function(u) {
   return(tan(pi * (u - 1/2)))
 }
 
-#Q1(b) Generate Cauchy randon numbers and show CLT doesn't hold
+#Q1(b) Generate Cauchy randon numbers and show CLT doesn't hold (the mean and variance are undefined)
 sample_size <- 500
 replications <- c(10, 100, 1000, 10000)
 par(mfrow = c(2, 2))

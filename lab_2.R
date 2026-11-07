@@ -25,6 +25,7 @@ density_pareto <- function(x, beta, alpha) {
 }
 
 #Q1(b): Generate and plot Pareto random numbers
+# Pareto mean finite for alpha > 1, Variance finite for alpha > 2
 set.seed(2025)
 alpha <- c(2,3,5,3)
 beta <- c(1,1,1,3)
@@ -96,18 +97,18 @@ print(moment_results)
 #Q2: Acceptance-Rejection Method (ARM)
 # f(x) = (x^2 / 2) * e^-x, x >= 0
 # g(x) = lambda * e^(-lambda * x), x >= 0
-# m(x) = f(x) / g(x) = (x^2 / 2 * lambda) * e^(-x * (1 - lambda))
+# m(x) = f(x) / g(x) = (x^2 / (2 * lambda)) * e^(-x * (1 - lambda))
 
 # maximise m -> differentiate m with respect to x and set to 0
 # # product rule: (uv)' = u'v + uv'
-# # u = (x^2 / 2 * lambda), v = e^(-x * (1 - lambda))
+# # u = (x^2 / (2 * lambda)), v = e^(-x * (1 - lambda))
 # # u' = x / lambda, v' = - (1 - lambda) * e^(-x * (1 - lambda))
 # # m'(x) factorised = ((x * e^(-x * (1 - lambda))) /  lambda) * 1 - (x * (1 - lambda) / 2)
 # # set m'(x) = 0, solve for x
 # # ((x * e^(-x * (1 - lambda))) /  lambda) can't be 0, so 1 - (x * (1 - lambda) / 2) = 0
 # # x = 2 / (1 - lambda)
 
-# sub it back into m(x): (1 / 2 * lambda) * (2 / (1 - lambda))^2 * e^((-2 / (1 - lambda)) * (1 - lambda)))
+# sub it back into m(x): (1 / (2 * lambda)) * (2 / (1 - lambda))^2 * e^((-2 / (1 - lambda)) * (1 - lambda)))
 # simplify: (2 * e^-2) / (lambda * (1 - lambda)^2)
 # minimise c: same as maximising inverse = lambda * (1 - lambda)^2
 # differentiate with respect to lambda and set to 0
